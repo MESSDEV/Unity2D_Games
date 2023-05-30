@@ -1,42 +1,43 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
  
 public class Player : MonoBehaviour
 {
-    public static List<Square> squares;
+    public int points;
  
-    public static int score = 0;
+    public Projectile projectilePrefab;
  
-    void Awake()
-    {
-        squares = new List<Square>();
-    }
+    public float shootInterval;
+    public float shootTimer;
+ 
+    public Transform shootPoint;
  
     void Update()
     {
-        if (squares.Count == 0)
+        Move();
+ 
+        shootTimer -= Time.deltaTime;
+ 
+        Shoot();
+    }
+ 
+    void Shoot()
+    {
+        if(shootTimer <= 0)
         {
-            Victory();
+            Instantiate(projectilePrefab, shootPoint.position, Quaternion.identity);
+            shootTimer = shootInterval;
         }
     }
  
-    public static void Defeat()
+    void Move()
     {
-        score = 0;
-        UI.ShowDefeatPanel();
+        if (Input.GetMouseButton(0))
+        {
+            Vector2 mousePos = Input.mousePosition;
+            Vector2 realPos = Camera.main.ScreenToWorldPoint(mousePos);
+            transform.position = realPos;
+        }
     }
- 
-    public static void Victory()
-    {
-        UI.ShowVictoryPanel();
-    }
- 
-    public static void Restart()
-    {
-        int index = SceneManager.GetActiveScene().buildIndex;
-        SceneManager.LoadScene(index);
-    }
- 
 }
